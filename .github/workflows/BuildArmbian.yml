@@ -1,0 +1,52 @@
+name: Build Armbian
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - branch: current
+          - branch: edge
+    steps:
+    - name: Checkout Armbian build repository
+      uses: actions/checkout@v4
+      with:
+        repository: xiangfeidexiaohuo/armbian-build
+        ref: main
+
+    - name: Run Armbian compile
+      run: |
+        sudo -E ./compile.sh build BOARD=easepi-r1 KERNEL_BTF=no BRANCH=${{ matrix.branch }} BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no RELEASE=trixie
+
+    - name: Prepare and zip image
+      run: |
+        ZIP_NAME="Armbian-unofficial_Easepi-R1-Pro_trixie_${{ matrix.branch }}_$(date +%Y%m%d).zip"
+        sudo -E zip -r output/${ZIP_NAME} output/images/*_minimal.img
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: armbian-${{ matrix.branch }}
+        path: output/*.zip
+
+    - name: Generate Tag & Release Name
+      id: generate_name
+      run: |
+        time=$(date +%Y%m%d%H%M%S)
+        release_tag="$time"
+        release_name="EasepiR1-Pro-非官方armbian-$(date +%Y%m%d)"
+        echo "release_name=$release_name" >> $GITHUB_OUTPUT
+        echo "release_tag=$release_tag" >> $GITHUB_OUTPUT       
+
+    - name: Create Release & Upload
+      uses: ncipollo/release-action@v1.14.0
+      with:
+        artifacts: output/*.zip
+        name: ${{ steps.generate_name.outputs.release_name }}
+        tag: ${{ steps.generate_name.outputs.release_tag }}
+        token: ${{ secrets.ARMBIAN_TOKEN }}
