@@ -34,19 +34,32 @@ jobs:
         name: armbian-${{ matrix.branch }}
         path: output/*.zip
 
-    - name: Generate Tag & Release Name
-      id: generate_name
-      run: |
-        time=$(date +%Y%m%d%H%M%S)
-        release_tag="$time"
-        release_name="EasepiR1-Pro-非官方armbian-$(date +%Y%m%d)"
-        echo "release_name=$release_name" >> $GITHUB_OUTPUT
-        echo "release_tag=$release_tag" >> $GITHUB_OUTPUT       
-
-    - name: Create Release & Upload
-      uses: ncipollo/release-action@v1.14.0
-      with:
-        artifacts: output/*.zip
-        name: ${{ steps.generate_name.outputs.release_name }}
-        tag: ${{ steps.generate_name.outputs.release_tag }}
-        token: ${{ secrets.ARMBIAN_TOKEN }}
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@main
+        with:
+          path: downloaded_artifacts
+      
+      - name: Prepare release assets
+        run: |
+          mkdir -p release_assets
+          find downloaded_artifacts -name "Armbian-*.zip" -exec cp {} release_assets \;
+      
+      - name: Generate release info
+        id: release_info
+        run: |
+          echo "release_tag=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+          echo "release_name=EasepiR1-Pro-非官方armbian-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+      
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release_info.outputs.release_tag }}
+          name: ${{ steps.release_info.outputs.release_name }}
+          files: |
+            release_assets/*
+          token: ${{ secrets.ARMBIAN_TOKEN }}
