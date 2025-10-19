@@ -17,7 +17,7 @@ jobs:
       matrix: ${{ steps.gen.outputs.matrix }}
       count: ${{ steps.gen.outputs.count }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Produce inventory JSON"
         run: |
 
@@ -75,7 +75,7 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -175,13 +175,13 @@ jobs:
     needs: [build-matrix, rewrite-configs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Download all change artifacts (no merge)
         continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: _artifacts
           pattern: changes-*
@@ -282,7 +282,7 @@ jobs:
 
       - name: Open / Update PR
         if: env.NO_CHANGES != 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           add-paths: |
             config/kernel/*
