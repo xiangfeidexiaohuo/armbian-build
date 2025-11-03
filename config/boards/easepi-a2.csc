@@ -1,0 +1,13 @@
+# Rockchip RK3568 quad core 4GB SoC 1x2.5GBe 2xNVMe eMMC USB3
+BOARD_NAME="LinkEase EasePi A2"
+BOARDFAMILY="rk35xx"
+BOARD_MAINTAINER=""
+BOOTCONFIG="radxa-e25-rk3568_defconfig"
+KERNEL_TARGET="current,edge"
+KERNEL_TEST_TARGET="current"
+FULL_DESKTOP="yes"
+BOOT_LOGO="desktop"
+BOOT_FDT_FILE="rockchip/rk3568-easepi-a2.dtb"
+BOOT_SCENARIO="spl-blobs"
+IMAGE_PARTITION_TABLE="gpt"
+BOOTFS_TYPE="fat"
