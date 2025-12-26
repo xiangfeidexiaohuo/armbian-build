@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0
 #
-# Copyright (c) 2013-2023 Igor Pecovnik, igor@armbian.com
+# Copyright (c) 2013-2026 Igor Pecovnik, igor@armbian.com
 #
 # This file is a part of the Armbian Build Framework
 # https://github.com/armbian/build/
@@ -130,11 +130,6 @@ function install_distribution_agnostic() {
 
 	# add the /dev/urandom path to the rng config file
 	echo "HRNGDEVICE=/dev/urandom" >> "${SDCARD}"/etc/default/rng-tools
-
-	# @TODO: security problem?
-	# ping needs privileged action to be able to create raw network socket
-	# this is working properly but not with (at least) Debian Buster
-	chroot_sdcard chmod u+s /bin/ping
 
 	# change time zone data
 	echo "${TZDATA}" > "${SDCARD}"/etc/timezone

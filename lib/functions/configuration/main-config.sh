@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0
 #
-# Copyright (c) 2013-2023 Igor Pecovnik, igor@armbian.com
+# Copyright (c) 2013-2026 Igor Pecovnik, igor@armbian.com
 #
 # This file is a part of the Armbian Build Framework
 # https://github.com/armbian/build/
@@ -321,9 +321,10 @@ function do_main_configuration() {
 			;;
 	esac
 
-        # enable APA extension for Debian Unstable release
-	# loong64 is not supported now
-        [ "$RELEASE" = "sid" ] && [ "$ARCH" != "loong64" ] && enable_extension "apa"
+	# enable APA extension for latest Ubuntu and Debian releases
+	# FIXME: drop this paragraph when APA becomes the default
+	# FIXME: loong64 is not supported now
+	[[ "$RELEASE" =~ ^(sid|questing|resolute)$ ]] && [[ "$ARCH" != "loong64" ]] && enable_extension "apa"
 
 	## Extensions: at this point we've sourced all the config files that will be used,
 	##             and (hopefully) not yet invoked any extension methods. So this is the perfect
